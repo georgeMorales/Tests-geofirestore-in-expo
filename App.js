@@ -64,20 +64,34 @@ export default class App extends React.Component {
 		});
 	}
 
-	readListenDocument() {
+	// If there is any change in any document in the user collection, it breaks
+	async readListenDocument() {
 
 		const firestore = firebase.firestore();
 		const geofirestore = new GeoFirestore(firestore);
         const geocollection = geofirestore.collection('users');
 
-		let query = geocollection.limit(50).near({
+		let query = await geocollection.limit(50).near({
 			center: new firebase.firestore.GeoPoint(centerLat, centerLng),
 			radius: radius
 		});
 
-		let docQuery = query.onSnapshot((snapshot) => {
-			console.log('doc changes', snapshot.docChanges())
-		})
+		let docQuery = await query.onSnapshot((snapshot) => {
+			//console.log('snapshot', snapshot)
+			let users = [];
+	
+			for (let i = 0; i < snapshot.docs.length; i++) {
+				let {doc} = snapshot.docChanges()[i];
+				//console.log(doc.distance)
+				let user = {...snapshot.docs[i].data(), distance: doc.distance, id: snapshot.docs[i].id}
+				users.push(user)
+				//Alert.alert(JSON.stringify(users))
+			}
+			console.log(users)
+			
+			this.setState({users: users})
+			//console.log('doc changes', snapshot.docChanges())
+		});
 	}
 
 

@@ -4,7 +4,8 @@ import "firebase/firestore";
 
 
 const firebaseConfig = {
-   // Put sdk web configuration of firebase
+    // Put sdk web configuration of firebase
+   
 };
 
 firebase.initializeApp(firebaseConfig);
